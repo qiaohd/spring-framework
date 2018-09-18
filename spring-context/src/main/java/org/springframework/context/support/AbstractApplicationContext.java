@@ -83,32 +83,42 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 
 /**
+ * 
  * Abstract implementation of the {@link org.springframework.context.ApplicationContext}
- * interface. Doesn't mandate the type of storage used for configuration; simply
- * implements common context functionality. Uses the Template Method design pattern,
- * requiring concrete subclasses to implement abstract methods.
+ * interface（是ApplicationContext接口的抽象实现）. Doesn't mandate the type of storage used for configuration;（不要求用于配置的存储类型;） simply
+ * implements common context functionality（简单的实现常见的上下文功能）. Uses the Template Method design pattern（使用模版方法设计模型）,
+ * requiring concrete subclasses to implement abstract methods.（需要具体子类实现其抽象方法）
  *
+ * 相对于普通的beanFactory，ApplicationContext应该检测在其内部bean工厂中定义的特殊bean
  * <p>In contrast to a plain BeanFactory, an ApplicationContext is supposed
  * to detect special beans defined in its internal bean factory:
+ * 因此，该类自动注册BeanFactoryPostProcessors、BeanPostProcessors、ApplicationListeners
  * Therefore, this class automatically registers
  * {@link org.springframework.beans.factory.config.BeanFactoryPostProcessor BeanFactoryPostProcessors},
  * {@link org.springframework.beans.factory.config.BeanPostProcessor BeanPostProcessors}
  * and {@link org.springframework.context.ApplicationListener ApplicationListeners}
+ * 他们context中定义的beans
  * which are defined as beans in the context.
- *
+ * messageSource定义了MessageSource的bean在context中
  * <p>A {@link org.springframework.context.MessageSource} may also be supplied
  * as a bean in the context, with the name "messageSource"; otherwise, message
- * resolution is delegated to the parent context. Furthermore, a multicaster
+ * resolution is delegated to the parent context.（否则、消息解析委托于父上下文） Furthermore, a multicaster
+ * 此外，a multicaster 为 application events 可提供applicationEventMulticaster的ApplicationEventMulticaster 的bean在上下文中
  * for application events can be supplied as "applicationEventMulticaster" bean
  * of type {@link org.springframework.context.event.ApplicationEventMulticaster}
+ * 否则将使用默认的multicaster类型SimpleApplicationEventMulticaster
  * in the context; otherwise, a default multicaster of type
  * {@link org.springframework.context.event.SimpleApplicationEventMulticaster} will be used.
- *
+ * 
+ * 通过扩展DefaultResourceLoader进行资源的加载
  * <p>Implements resource loading through extending
  * {@link org.springframework.core.io.DefaultResourceLoader}.
+ * 因此，将非URL的资源路径视为class类路径资源
  * Consequently treats non-URL resource paths as class path resources
+ * 支持包含包路径的完整类路径资源名称，例如“mypackage / myresource.dat”
  * (supporting full class path resource names that include the package path,
  * e.g. "mypackage/myresource.dat"), unless the {@link #getResourceByPath}
+ * 除非DefaultResourceLoader.getResourceByPath(java.lang.String)方法被覆盖一个子类。
  * method is overwritten in a subclass.
  *
  * @author Rod Johnson
